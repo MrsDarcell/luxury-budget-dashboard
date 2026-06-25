@@ -695,37 +695,47 @@ canvas {
 @media (max-width: 1400px) {
 
   .top-cards {
+
     grid-template-columns: 1fr 1fr;
+
   }
 
-  .middle-grid,
-  .lower-grid {
-    grid-template-columns: 1fr;
-  }
 }
+
 
 @media (max-width: 1000px) {
 
   .app-layout {
+
     flex-direction: column;
+
   }
+
 
   .sidebar {
-    width: 100%;
+
+    width:100%;
+
+    padding:20px;
+
   }
 
-  .bottom-nav {
-    flex-wrap: wrap;
-    gap: 10px;
+
+  .main-content {
+
+    width:100%;
+
+    max-width:none;
+
   }
 
-  .title-group h1 {
-    font-size: 42px;
-  }
 
   .top-cards {
-    grid-template-columns: 1fr;
+
+    grid-template-columns:1fr;
+
   }
+
 }
 
 /* PREMIUM TRANSACTIONS */
