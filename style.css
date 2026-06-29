@@ -736,6 +736,14 @@ canvas {
 
   }
 
+
+  .middle-grid,
+  .lower-grid {
+
+    grid-template-columns:1fr;
+
+  }
+
 }
 
 /* PREMIUM TRANSACTIONS */
