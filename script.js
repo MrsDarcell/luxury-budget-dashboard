@@ -2575,3 +2575,56 @@ function updateDemoButtons() {
 
 updateDemoButtons();
 /* ===== END DEMO DATA ===== */
+
+/* ===== DASHBOARD INSIGHTS FIX ===== */
+function renderDashboardInsights() {
+  const box = document.getElementById("insights-list");
+  if (!box) return;
+
+  if (!transactions || transactions.length === 0) {
+    box.textContent = "No insights yet. Add a transaction to see insights.";
+    return;
+  }
+
+  const income = transactions
+    .filter(t => t.amount > 0)
+    .reduce((sum, t) => sum + t.amount, 0);
+  const expenses = transactions
+    .filter(t => t.amount < 0)
+    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  const rate = income > 0 ? Math.round(((income - expenses) / income) * 100) : 0;
+
+  const totals = {};
+  transactions
+    .filter(t => t.amount < 0)
+    .forEach(t => {
+      const cat = t.category || "Other";
+      totals[cat] = (totals[cat] || 0) + Math.abs(t.amount);
+    });
+  let topCat = "None";
+  let topAmt = 0;
+  for (const c in totals) {
+    if (totals[c] > topAmt) { topAmt = totals[c]; topCat = c; }
+  }
+
+  const lines = [];
+  lines.push(rate >= 20
+    ? `✅ Healthy savings rate — you're saving ${rate}% of your income.`
+    : `💰 Your savings rate is ${rate}%. Even a small bump builds momentum.`);
+  if (topCat !== "None") lines.push(`🔥 Highest spending category: ${topCat} ($${topAmt}).`);
+  lines.push(income > expenses
+    ? "✅ Income exceeds expenses — you're in the green."
+    : "⚠️ Expenses exceed income right now.");
+
+  const goal = (goals || [])
+    .map(g => ({ n: g.name, p: Math.round((g.saved / g.target) * 100) }))
+    .filter(g => g.p >= 75)[0];
+  if (goal) lines.push(`🎯 You're ${goal.p}% toward your ${goal.n} goal — almost there!`);
+
+  box.innerHTML = lines.join("<br>");
+}
+
+/* Run the fix every time the app refreshes, plus once right now */
+const _lbOriginalUpdateUI = updateUI;
+updateUI = function () { _lbOriginalUpdateUI(); renderDashboardInsights(); };
+renderDashboardInsights();
