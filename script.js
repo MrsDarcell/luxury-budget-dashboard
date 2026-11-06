@@ -2451,3 +2451,127 @@ function sendFeedback() {
     "mailto:guestservices.darcell@gmail.com?subject=Luxury Budget Feedback";
 
 }
+
+/* ===== DEMO DATA ===== */
+function demoDate(daysAgo) {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  return {
+    date: d.toLocaleDateString(),
+    month: d.toLocaleDateString("en-US", { month: "short", year: "numeric" })
+  };
+}
+
+function loadDemoData() {
+  if (localStorage.getItem("demoMode") === "on") return;
+
+  /* Back up whatever is currently in the app (may be empty) */
+  if (!localStorage.getItem("lbDemoBackup")) {
+    localStorage.setItem("lbDemoBackup", JSON.stringify({
+      transactions: localStorage.getItem("transactions"),
+      goals: localStorage.getItem("goals"),
+      budgets: localStorage.getItem("budgets"),
+      netWorth: localStorage.getItem("netWorth")
+    }));
+  }
+
+  const demoTransactions = [
+    { description: "Paycheck", amount: 3200, category: "Income", daysAgo: 18 },
+    { description: "Side Income", amount: 650, category: "Income", daysAgo: 6 },
+    { description: "Rent", amount: -1450, category: "Bills", daysAgo: 17 },
+    { description: "Utilities", amount: -165, category: "Bills", daysAgo: 12 },
+    { description: "Groceries", amount: -520, category: "Food", daysAgo: 10 },
+    { description: "Dining Out", amount: -180, category: "Food", daysAgo: 4 },
+    { description: "Gas & Transport", amount: -240, category: "Transport", daysAgo: 9 },
+    { description: "Personal Shopping", amount: -145, category: "Shopping", daysAgo: 5 },
+    { description: "Subscriptions", amount: -48, category: "Entertainment", daysAgo: 14 },
+    { description: "Coffee & Snacks", amount: -36, category: "Food", daysAgo: 2 },
+    { description: "Household Items", amount: -64, category: "Shopping", daysAgo: 7 }
+  ];
+
+  transactions = demoTransactions.map((t, i) => {
+    const when = demoDate(t.daysAgo);
+    return {
+      id: Date.now() + i,
+      description: t.description,
+      amount: t.amount,
+      category: t.category,
+      date: when.date,
+      month: when.month
+    };
+  });
+
+  goals = [
+    { id: Date.now() + 101, name: "Emergency Fund", target: 1000, saved: 800 },
+    { id: Date.now() + 102, name: "Vacation Fund", target: 2500, saved: 250 }
+  ];
+
+  budgets = [
+    { id: Date.now() + 201, category: "Food", amount: 800, saved: 736 },
+    { id: Date.now() + 202, category: "Bills", amount: 1800, saved: 1615 }
+  ];
+
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+  localStorage.setItem("goals", JSON.stringify(goals));
+  localStorage.setItem("budgets", JSON.stringify(budgets));
+  localStorage.setItem("netWorth", JSON.stringify({
+    cash: 1002, savings: 1050, investments: 350, debt: 500, total: 1902
+  }));
+  localStorage.setItem("demoMode", "on");
+
+  updateUI();
+  renderGoals();
+  loadNetWorth();
+  updateDemoButtons();
+}
+
+function clearDemoData() {
+  const backup = JSON.parse(localStorage.getItem("lbDemoBackup") || "null");
+
+  if (backup) {
+    ["transactions", "goals", "budgets", "netWorth"].forEach(key => {
+      if (backup[key] === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, backup[key]);
+    });
+    transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+    goals = JSON.parse(localStorage.getItem("goals") || "[]");
+    budgets = JSON.parse(localStorage.getItem("budgets") || "[]");
+  } else {
+    transactions = [];
+    goals = [];
+    budgets = [];
+    localStorage.removeItem("transactions");
+    localStorage.removeItem("goals");
+    localStorage.removeItem("budgets");
+    localStorage.removeItem("netWorth");
+  }
+
+  localStorage.removeItem("lbDemoBackup");
+  localStorage.removeItem("demoMode");
+
+  updateUI();
+  renderGoals();
+  loadNetWorth();
+  if (!backup || !backup.netWorth) {
+    ["cash-input", "savings-input", "investments-input", "debt-input"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    const total = document.getElementById("net-worth-total");
+    if (total) total.innerText = "$0";
+  }
+  updateDemoButtons();
+}
+
+function updateDemoButtons() {
+  const on = localStorage.getItem("demoMode") === "on";
+  const loadBtn = document.getElementById("demo-load-btn");
+  const clearBtn = document.getElementById("demo-clear-btn");
+  const note = document.getElementById("demo-note");
+  if (loadBtn) loadBtn.style.display = on ? "none" : "";
+  if (clearBtn) clearBtn.style.display = on ? "" : "none";
+  if (note) note.style.display = on ? "" : "none";
+}
+
+updateDemoButtons();
+/* ===== END DEMO DATA ===== */

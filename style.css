@@ -1213,3 +1213,35 @@ select option {
 
   border-radius: 18px;
 }
+
+/* DEMO DATA BAR */
+.demo-bar {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 9999;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.demo-bar button {
+  background: #FFD700;
+  color: #050505;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.demo-bar #demo-clear-btn {
+  background: #222;
+  color: #FFD700;
+  border: 1px solid #FFD700;
+}
+.demo-bar #demo-note {
+  color: #FFD700;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
